@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Timetable Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- PDF and Excel Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Chart.js for Dashboard -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-content">
+        <h1>📚 Advanced Timetable Generator</h1>
+        <p>Constraint-based scheduling with faculty conflict detection</p>
+    </div>
+</header>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+
+    <!-- SIDEBAR - INPUT PANEL -->
+    <aside class="sidebar">
+        <div class="input-section">
+            <h2>⚙️ Configuration</h2>
+            
+            <div class="form-group">
+                <label>Working Days per Week</label>
+                <input type="number" id="workingDays" value="6" min="1" max="7">
+                <small>Monday to Saturday (or your preferred days)</small>
+            </div>
+
+            <div class="form-group">
+                <label>Number of Sections/Classes</label>
+                <input type="number" id="sections" value="3" min="1" max="10">
+            </div>
+
+            <div class="form-group">
+                <label>Number of Subjects per Section</label>
+                <input type="number" id="subjects" value="5" min="1" max="15">
+            </div>
+
+            <div class="form-group">
+                <label>Number of Labs per Section</label>
+                <input type="number" id="labs" value="2" min="0" max="5">
+            </div>
+
+            <div class="form-group">
+                <label>Number of Rooms Available</label>
+                <input type="number" id="rooms" value="10" min="1" max="50">
+            </div>
+
+            <button class="btn btn-primary" onclick="generateSubjectGrids()">
+                ✏️ Generate Subject Inputs
+            </button>
+            <button class="btn btn-primary" onclick="generateLabGrids()">
+                🧪 Generate Lab Inputs
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- INPUT FORMS -->
+        <section id="inputForms" class="forms-section">
+            <div class="section-header">
+                <h2>📋 Input Section & Subject Details</h2>
+            </div>
+            
+            <!-- Subject Container -->
+            <div id="subjectContainer" class="input-container"></div>
+
+            <!-- Lab Container -->
+            <div id="labContainer" class="input-container"></div>
+
+            <!-- Generate Button -->
+            <div class="action-buttons">
+                <button class="btn btn-success btn-large" onclick="generateTimetable()">
+                    🔄 Generate Optimized Timetable
+                </button>
+                <button class="btn btn-danger btn-large" onclick="clearAll()">
+                    🗑️ Clear All
+                </button>
+            </div>
+        </section>
+
+        <!-- OUTPUT SECTION -->
+        <section id="outputSection" class="output-section" style="display: none;">
+            <div class="section-header">
+                <h2>📊 Generated Timetables</h2>
+                <p class="info-text" id="scheduleInfo"></p>
+            </div>
+
+            <!-- TABS for Section vs Faculty View -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('sections')">
+                    📚 Section Timetables
+                </button>
+                <button class="tab-btn" onclick="switchTab('faculty')">
+                    👨‍🏫 Faculty Timetables
+                </button>
+                <button class="tab-btn" onclick="switchTab('statistics')">
+                    📊 Statistics & Analytics
+                </button>
+            </div>
+
+            <!-- Section Timetables Tab -->
+            <div id="sectionTab" class="tab-content active">
+                <div class="action-toolbar" style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-success" onclick="enableTimetableEditing()">
+                        ✏️ Enable Drag-and-Drop Editing
+                    </button>
+                    <button class="btn btn-info" onclick="exportSectionPDF()">
+                        📄 Export All Sections PDF
+                    </button>
+                    <button class="btn btn-info" onclick="exportSectionExcel()">
+                        📊 Export All Sections Excel
+                    </button>
+                </div>
+                <div id="sectionTimetables" class="timetables-grid"></div>
+            </div>
+
+            <!-- Faculty Timetables Tab -->
+            <div id="facultyTab" class="tab-content" style="display: none;">
+                <div class="action-toolbar" style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-info" onclick="exportFacultyPDF()">
+                        📄 Export All Faculty PDF
+                    </button>
+                    <button class="btn btn-info" onclick="exportFacultyExcel()">
+                        📊 Export All Faculty Excel
+                    </button>
+                </div>
+                <div id="facultyTimetables" class="timetables-grid"></div>
+            </div>
+
+            <!-- Statistics & Analytics Tab -->
+            <div id="statisticsTab" class="tab-content" style="display: none;">
+                <div id="statisticsPanel"></div>
+            </div>
+
+            <!-- Clash Detection Results -->
+            <div id="clashReport" class="clash-report" style="display: none;">
+                <h3>⚠️ Scheduling Conflicts Detected</h3>
+                <ul id="clashList"></ul>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>Advanced Timetable Generator v2.0 | Constraint-based scheduling algorithm</p>
+</footer>
+
+<!-- SCRIPT -->
+<script src="script.js"></script>
+
+</body>
+</html>
